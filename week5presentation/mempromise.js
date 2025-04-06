@@ -2,15 +2,19 @@ function promiseMemoize(fn) {
     const cache = {};
 
     return function(...args) {
-        const strX = JSON.stringify(args);
+        const strX = JSON.stringify(args); // converts arguments to a unique string key
+
+        // if result exists in cache, return cached promise
         if(strX in cache) {
             return cache[strX];
         }
+
+        // call function and store promise in cache
         cache[strX] = fn(...args).catch((err) => {
-            delete cache[strX];
-            throw err;
+            delete cache[strX]; // remove failed promise from cache
+            throw err; // rethrow error so caller knows it failed
         });
-        return cache[strX];
+        return cache[strX]; // return the promise
     };
 }
 
